@@ -20,7 +20,7 @@ import appHooks from './app.hooks';
 import channels from './channels';
 
 import module_initializer from './modules/module-initializer';
-//import some_module from './modules/some-module';
+import coinrate_requester from './modules/coinrate-requester';
 
 const app = express(feathers());
 
@@ -58,6 +58,6 @@ app.debug = console.log;
 
 // eslint-disable-next-line no-unused-vars
 const moduleInit = module_initializer(app);
-//moduleInit('some_module', some_module);
+moduleInit('coinrate_requester', coinrate_requester);
 
 export default app;
