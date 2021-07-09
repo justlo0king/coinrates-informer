@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
+require('@babel/register');
+
 const logger = require('./logger');
-const app = require('./app');
+const app = require('./app').default;
 const port = app.get('port');
 const server = app.listen(port);
 
