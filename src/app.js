@@ -3,7 +3,7 @@ import favicon from 'serve-favicon';
 import compress from 'compression';
 import helmet from 'helmet';
 import cors from 'cors';
-import logger from './logger';
+import { default as logger } from './logger';
 
 import feathers from '@feathersjs/feathers';
 import configuration from '@feathersjs/configuration';
@@ -18,6 +18,9 @@ import middleware from './middleware';
 import services from './services';
 import appHooks from './app.hooks';
 import channels from './channels';
+
+import module_initializer from './modules/module-initializer';
+//import some_module from './modules/some-module';
 
 const app = express(feathers());
 
@@ -51,5 +54,10 @@ app.use(notFound());
 app.use(errorHandler({ logger }));
 
 app.hooks(appHooks);
+app.debug = console.log;
+
+// eslint-disable-next-line no-unused-vars
+const moduleInit = module_initializer(app);
+//moduleInit('some_module', some_module);
 
 export default app;
