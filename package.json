@@ -1,0 +1,9 @@
+{
+  "name": "api",
+  "version": "0.0.1",
+  "description": "Feathers.js api boilerplate",
+  "main": "src/app.js",
+  "author": "Kamil S.<skamil@pm.me>",
+  "license": "MIT",
+  "private": true
+}
