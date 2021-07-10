@@ -55,6 +55,7 @@ app.use(errorHandler({ logger }));
 
 app.hooks(appHooks);
 app.debug = console.log;
+app.error = console.error;
 
 // eslint-disable-next-line no-unused-vars
 const moduleInit = module_initializer(app);
