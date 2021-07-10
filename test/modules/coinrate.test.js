@@ -18,14 +18,6 @@ describe('Module tests: coinrate', () => {
     server.close(done);
   });
 
-  it('has initialized coinrate requester', async () => {
-    assert.notEqual(
-      app.modules && app.modules['coinrate_requester'],
-      undefined,
-      'coinrate_requester module is not defined'
-    );
-  });
-
   it('requester returns error without parameters', async () => {
     const result = requester();
     assert.notEqual(
