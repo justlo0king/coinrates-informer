@@ -6,19 +6,19 @@ export default function appSocketIO(app) {
     io = _io;
     app.debug('app.socketio: init');
     io.on('connection', function(socket) {
-      app.debug('connection: ', socket.id);
+      app.debug('app.socketio: connection: ', socket.id);
       //socket.emit('handshake', { text: 'A client connected!' });
       socket.on('handshake', function (data) {
-        app.debug('handshake data: ', data);
+        app.debug('app.socketio: handshake data: ', data);
       });
       socket.on('data', function (data) {
-        app.debug('data: ', data);
+        app.debug('app.socketio: data: ', data);
       });
       socket.on('event', function (data) {
-        app.debug('event data: ', data);
+        app.debug('app.socketio: event data: ', data);
       });
       socket.on('create', function (data) {
-        app.debug('create data: ', data);
+        app.debug('app.socketio: create data: ', data);
       });
     });
   };

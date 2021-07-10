@@ -30,7 +30,8 @@
     "start": "node src/",
     "mocha": "npx mocha -r esm test/ --recursive --exit",
     "test-app": "npx mocha -r esm test/app.test.js",
-    "test-coinrate": "npx mocha -r esm test/modules/coinrate.test.js"
+    "test-coinrate": "npx mocha -r esm test/modules/coinrate.test.js",
+    "test-socketio": "npx mocha -r esm test/modules/socketio.test.js"
   },
   "standard": {
     "env": [

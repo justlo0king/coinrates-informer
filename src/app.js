@@ -12,7 +12,7 @@ import express, {
   rest, notFound, errorHandler
 } from '@feathersjs/express';
 import socketIO from '@feathersjs/socketio';
-import appSocketIO from './modules/app-socketio';
+import appSocketIO from './modules/socketio';
 
 import middleware from './middleware';
 import services from './services';
