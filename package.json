@@ -28,7 +28,9 @@
     "lint": "eslint src/. test/. --config .eslintrc.json --fix",
     "dev": "nodemon src/",
     "start": "node src/",
-    "mocha": "mocha -r esm test/ --recursive --exit"
+    "mocha": "npx mocha -r esm test/ --recursive --exit",
+    "test-app": "npx mocha -r esm test/app.test.js",
+    "test-coinrate": "npx mocha -r esm test/modules/coinrate.test.js"
   },
   "standard": {
     "env": [

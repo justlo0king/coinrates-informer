@@ -5,5 +5,8 @@
   "paginate": {
     "default": 10,
     "max": 50
+  },
+  "cryptocompare": {
+    "apiKey": "29aed37f559fa7d2ec64c681fb1bfc6a80f8b77e6a8217e692c0df46d18e4e99"
   }
 }
