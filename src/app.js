@@ -11,16 +11,13 @@ import express, {
   json, urlencoded, static as expressStatic,
   rest, notFound, errorHandler
 } from '@feathersjs/express';
-import socketio from '@feathersjs/socketio';
-
+import socketIO from '@feathersjs/socketio';
+import appSocketIO from './modules/app-socketio';
 
 import middleware from './middleware';
 import services from './services';
 import appHooks from './app.hooks';
 import channels from './channels';
-
-import module_initializer from './modules/module-initializer';
-import coinrate_requester from './modules/coinrate-requester';
 
 const app = express(feathers());
 
@@ -40,7 +37,8 @@ app.use('/', expressStatic(app.get('public')));
 
 // Set up Plugins and providers
 app.configure(rest());
-app.configure(socketio());
+//app.configure(socketio());
+app.configure(socketIO(appSocketIO(app)));
 
 // Configure other middleware (see `middleware/index.js`)
 app.configure(middleware);
@@ -56,9 +54,5 @@ app.use(errorHandler({ logger }));
 app.hooks(appHooks);
 app.debug = console.log;
 app.error = console.error;
-
-// eslint-disable-next-line no-unused-vars
-const moduleInit = module_initializer(app);
-moduleInit('coinrate_requester', coinrate_requester);
 
 export default app;

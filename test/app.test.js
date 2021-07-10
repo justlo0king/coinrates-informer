@@ -5,9 +5,6 @@ import { get } from 'axios';
 import { format } from 'url';
 import app from '../src/app';
 
-import module_initializer from './../src/modules/module-initializer';
-
-
 const port = app.get('port') || 8998;
 const getUrl = pathname => format({
   hostname: app.get('host') || 'localhost',
@@ -26,14 +23,6 @@ describe('Feathers application tests', () => {
 
   after(function(done) {
     server.close(done);
-  });
-
-  it('can initialize modules', async () => {
-    const some_module = function() {};
-
-    const moduleInit = module_initializer(app);
-    moduleInit('some_module', some_module);
-    assert.ok(app.modules && app.modules['some_module'] != undefined);
   });
 
   it('starts and shows the index page', async () => {
