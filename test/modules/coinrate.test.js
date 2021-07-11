@@ -18,39 +18,19 @@ describe('Module tests: coinrate', () => {
     server.close(done);
   });
 
-  it('requester returns error without parameters', async () => {
-    const result = requester();
-    assert.notEqual(
-      result && result.error,
-      undefined
-    );
-  });
-
-  it('requester returns error with  wrong callback type', async () => {
-    const result = requester('btc');
-    assert.notEqual(
-      result && result.error,
-      undefined
-    );
-  });
-
-  it('requester returns error with wrong coin_name type', async () => {
-    return requester({ coin: 1 }, function(result) {
-      assert.equal(
-        result && result.error,
-        'Coin parameter error'
-      );
+  it('requester returns error with wrong coin type', async () => {
+    return requester({ coin: 1 }, function(error) {
+      assert.equal(error, 'Coin parameter error');
     });
   });
-
 
   it('requester returns USD and EUR rates for BTC', () => {
     return requester({
       coin: 'btc'
-    }, function(result) {
+    }, function(error, result) {
       assert.equal(
-        result && result.error,
-        undefined
+        error,
+        null
       );
       assert.equal(
         typeof(result && result.USD),

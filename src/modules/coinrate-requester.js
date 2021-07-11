@@ -22,19 +22,11 @@ export default function coinrate_requester(app) {
   });
 
   return function(params, callback) {
+    callback = typeof callback == 'function' ? callback : function() {};
     try {
-      if (!callback || typeof callback !== 'function') {
-        app.error('coinrate_requester: callback is not a function');
-        return {
-          error: 'Callback error'
-        };
-      }
-
       if (!params || typeof params !== 'object') {
         app.error('coinrate_requester: params is not an object');
-        return callback({
-          error: 'Parameters error'
-        });
+        return callback('Parameters error');
       }
 
       const {
@@ -43,18 +35,14 @@ export default function coinrate_requester(app) {
 
       if (!apiKey) {
         app.error('coinrate_requester: apiKey not cryptocompare config');
-        return callback({
-          error: 'Configuration error'
-        });
+        return callback('Configuration error');
       }
 
       app.debug('coinrate_requester: coin: ' + coin);
 
       if (!coin || typeof coin !== 'string') {
         app.error('coinrate_requester: coin string not in params: ', coin);
-        return callback({
-          error: 'Coin parameter error'
-        });
+        return callback('Coin parameter error');
       }
 
       return instance.get(`/data/price?fsym=${String(coin).toUpperCase()}&tsyms=${currencies}'`).then((requestResponse) => {
@@ -63,25 +51,17 @@ export default function coinrate_requester(app) {
         app.debug('coinrate_requester: responseData: ', responseData);
         if (String(response).trim().toLowerCase() === 'error') {
           app.debug('coinrate_requester: request failed, response: ', response);
-          return callback({
-            error: message || 'Failed to request exchange rates'
-          });
+          return callback(message || 'Failed to request exchange rates');
         } else {
-          return callback(responseData);
+          return callback(null, responseData);
         }
       }).catch((error) => {
         app.error('coinrate_requester: request error: ', error);
-        return callback({
-          error: error.message || 'Failed to request exchange rate'
-        });
+        return callback(error.message || 'Failed to request exchange rate');
       });
     } catch(error) {
       app.error('coinrate_requester: error: ', error);
-      const result = {
-        error: error.message || 'Failed to request exchange rate'
-      };
-
-      return typeof callback == 'function' ? callback(result) : result;
+      return callback(error.message || 'Failed to request exchange rate');
     }
   };
 }
