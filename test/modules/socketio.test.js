@@ -2,12 +2,12 @@ import { strict as assert } from 'assert';
 import io from 'socket.io-client';
 import app from '../../src/app';
 
-
 const port = app.get('port') || 8998;
 
 describe('Module tests: socketio', () => {
   let server;
   let socket;
+  const testUserID = 'someUser';
 
   before(function(done) {
     server = app.listen(port);
@@ -15,6 +15,7 @@ describe('Module tests: socketio', () => {
   });
 
   after(function(done) {
+
     if (socket) {
       socket.close();
     }
@@ -33,9 +34,8 @@ describe('Module tests: socketio', () => {
           reject();
         }
       }, 2000);
-
       socket.on('connect', function() {
-        app.debug('socket connected to: ', connectionUri);
+        app.debug('test:', 'socket connected to: ', connectionUri);
         assert(socket);
         isResolved = true;
         if (rejectTimeout) {
@@ -43,6 +43,34 @@ describe('Module tests: socketio', () => {
         }
         resolve();
       });
+    }));
+  });
+
+  it('sends handshake data an receives response', () => {
+    if (!socket || !socket.connected) {
+      throw new Error('socket is not connected');
+    }
+    return (new Promise(function(resolve, reject) {
+      let isResolved = false;
+      let rejectTimeout = setTimeout(function() {
+        if (!isResolved) {
+          reject();
+        }
+      }, 2000);
+
+      socket.on('connection', function(data) {
+        const { connection } = data || {};
+        const { id:connectionId } = connection || {};
+        app.debug('test:', 'connection id: ', connectionId);
+        assert.ok(connectionId, 'connection.id not in response');
+        isResolved = true;
+        if (rejectTimeout) {
+          clearTimeout(rejectTimeout);
+        }
+        resolve();
+      });
+
+      socket.emit('handshake', { userId: testUserID });
     }));
   });
 });

@@ -880,7 +880,16 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@feathersjs/commons@^4.5.11":
+"@feathersjs/adapter-commons@^4.3.6":
+  version "4.5.11"
+  resolved "https://registry.yarnpkg.com/@feathersjs/adapter-commons/-/adapter-commons-4.5.11.tgz#b7eaa9a9124591aa639f9080a7522fa60fb29915"
+  integrity sha512-qJ+P/6GLR3KfXhzgRkvl3p66YmaTxLO1js1Jzs+d5QnnUYx+jWSV7tzYVZoVjQSlF8ht/zh9N5qfh0RV9w1E+w==
+  dependencies:
+    "@feathersjs/commons" "^4.5.11"
+    "@feathersjs/errors" "^4.5.11"
+    "@feathersjs/feathers" "^4.5.11"
+
+"@feathersjs/commons@^4.3.0", "@feathersjs/commons@^4.5.11":
   version "4.5.11"
   resolved "https://registry.yarnpkg.com/@feathersjs/commons/-/commons-4.5.11.tgz#4c9d04e6996b823981b714312f7915c4469f0ffd"
   integrity sha512-it/9lc0OER36+2zidopWo6Z4xRqNImQ+qegyQdHEuIDpEsYLXAv6MVHuDccaW2x2UmW5pce75UB7DhQ8yh8J/Q==
@@ -894,7 +903,7 @@
     config "^3.3.3"
     debug "^4.3.1"
 
-"@feathersjs/errors@^4.5.11":
+"@feathersjs/errors@^4.3.4", "@feathersjs/errors@^4.5.11":
   version "4.5.11"
   resolved "https://registry.yarnpkg.com/@feathersjs/errors/-/errors-4.5.11.tgz#419b4dd9b557fe7a87978363175cbd5e06f8b3b9"
   integrity sha512-KzkUqmaV7/SGK6SM/ILXjMI/EHOGKQE4GgDHCsB4+mcIwb8IZboeHL6IkYjh6MvwjKNDyS728McZvcflDGn/fA==
@@ -2063,6 +2072,16 @@ fast-safe-stringify@^2.0.4:
   version "2.0.8"
   resolved "https://registry.yarnpkg.com/fast-safe-stringify/-/fast-safe-stringify-2.0.8.tgz#dc2af48c46cf712b683e849b2bbd446b32de936f"
   integrity sha512-lXatBjf3WPjmWD6DpIZxkeSsCOwqI0maYMpgDlx8g4U2qi4lbjA9oH/HD2a87G+KfsUmo5WbJFmqBZlPxtptag==
+
+feathers-memory@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/feathers-memory/-/feathers-memory-4.1.0.tgz#3cd70e20ebf1dfe4b996e8bf0a22b65cdb8173a3"
+  integrity sha512-tR8DFqLsSk2w7tpSdHjA5RgPHTu3X5R3L3Kob2K+E3b/Q5cDkI6AYQarDQOiwekAyqxkkp/fm7Fg0qYdu4Ua6Q==
+  dependencies:
+    "@feathersjs/adapter-commons" "^4.3.6"
+    "@feathersjs/commons" "^4.3.0"
+    "@feathersjs/errors" "^4.3.4"
+    sift "^8.5.0"
 
 fecha@^4.2.0:
   version "4.2.1"
@@ -3428,6 +3447,11 @@ shebang-regex@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/shebang-regex/-/shebang-regex-3.0.0.tgz#ae16f1644d873ecad843b0307b143362d4c42172"
   integrity sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==
+
+sift@^8.5.0:
+  version "8.5.1"
+  resolved "https://registry.yarnpkg.com/sift/-/sift-8.5.1.tgz#22a29e1a3332e8f8d372dc5999f5cc3093778fe8"
+  integrity sha512-um2rEdXrc4YcRMzIliuip4i2o92mJONh5W1VD9vJlm1e0apVqMK4P2ZUijz8BIe1/oYLWmXwXaKFM+fOaO3Ysg==
 
 signal-exit@^3.0.2:
   version "3.0.3"

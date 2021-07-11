@@ -4,11 +4,21 @@ export default function(app) {
     return;
   }
 
-  app.on('connection', connection => {
+  app.on('connection', (connection) => {
     // On a new real-time connection, add it to the anonymous channel
+    app.debug('channels: connection: ', connection);
+
+    const { socketId } = connection || {};
+    if (!socketId || typeof socketId !== 'string') {
+      app.error('channels: socketId not in connection payload: ', connection);
+      return;
+    }
+
     app.channel('anonymous').join(connection);
+    app.channel(`connection/${socketId}`).join(connection);
   });
 
+  /*
   app.on('login', (authResult, { connection }) => {
     // connection can be undefined if there is no
     // real-time connection, e.g. when logging in via REST
@@ -46,7 +56,7 @@ export default function(app) {
     // e.g. to publish all service events to all authenticated users use
     return app.channel('authenticated');
   });
-
+  */
   // Here you can also add service specific event publishers
   // e.g. the publish the `users` service `created` event to the `admins` channel
   // app.service('users').publish('created', () => app.channel('admins'));
