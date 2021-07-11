@@ -1,3 +1,5 @@
-// eslint-disable-next-line no-unused-vars
+import connections from './connections/connections.service';
+
 export default function (app) {
+  app.configure(connections);
 }
