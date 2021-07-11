@@ -1,6 +1,6 @@
 
 /**
- * Constructor for singleton cointaining logic related to coin exchange rates
+ * Constructor for singleton cointaining logic related to working with connections
  * @param {Application} app - feathers app
  * @param {Object} params   - parameters: {
  *   send: function(connectionId, event, data) - method to send data to sockets

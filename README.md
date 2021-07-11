@@ -4,7 +4,8 @@
 
 ## About
 
-This project uses [Feathers](http://feathersjs.com). An open source web framework for building modern real-time applications.
+This project uses [Feathers](http://feathersjs.com), - an open source web framework for building modern real-time applications.
+Most of the logic is located in `src/modules` folder.
 
 ## Getting Started
 
