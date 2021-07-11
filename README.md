@@ -1,6 +1,6 @@
 # api
 
-> Feathers.js api boilerplate
+> Feathers.js backend app informing users about cryptocurrency rates.
 
 ## About
 
@@ -8,25 +8,52 @@ This project uses [Feathers](http://feathersjs.com). An open source web framewor
 
 ## Getting Started
 
-Getting up and running is as easy as 1, 2, 3.
+Getting up and running is as easy.
 
-1. Make sure you have [NodeJS](https://nodejs.org/) and [npm](https://www.npmjs.com/) installed.
+1. Make sure you have [NodeJS](https://nodejs.org/) and [Yarn](https://yarnpkg.com) installed.
 2. Install your dependencies
 
     ```
     cd path/to/api
-    npm install
+    yarn install
     ```
 
-3. Start your app
+3. Start your app to get it running at http://localhost:3000
 
     ```
-    npm start
+    yarn start
+    ```
+4. Connect by [Socket.io](https://socket.io/) to `ws://localhost:3000`. Emit `handshake` event with `userId` property in passed data.
+
+5. Send PATCH request to REST API endpoint with userId in  query to receive exchange rates as socket message:
+
+    ```
+    PATCH http://localhost:3030/connections/?userId=someUser
+    Content-Type: application/json
+
+    {
+      "command": { "name": "coinrates" }
+    }
     ```
 
-## Testing
+## Automatic testing
 
-Simply run `npm test` and all your tests in the `test/` directory will be run.
+Run `yarn test` for running all tests and exit.
+
+    yarn test
+
+
+## Semi-automatic testing
+Run `yarn test-noexit` to keep server and socket alive. Send `PATCH` requests to `http://localhost:3030/connections/?userId=someUser` to get updates by socket connection (as in `test/services/coinrates.rest` file):
+
+
+    PATCH http://localhost:3030/connections/?userId=someUser
+    Content-Type: application/json
+
+    {
+      "command": { "name": "coinrates" }
+    }
+
 
 ## Scaffolding
 
