@@ -28,11 +28,11 @@
     "lint": "eslint src/. test/. --config .eslintrc.json --fix",
     "dev": "nodemon src/",
     "start": "node src/",
-    "mocha": "npx mocha -r esm test/ --recursive --exit",
-    "test-app": "npx mocha -r esm test/app.test.js",
-    "test-coinrate": "npx mocha -r esm test/modules/coinrate.test.js",
-    "test-socketio": "npx mocha -r esm test/modules/socketio.test.js",
-    "test-connections": "npx mocha -r esm test/modules/connections.test.js"
+    "mocha": "yarn test-app && yarn test-socketio && yarn test-connections && yarn test-coinrates",
+    "test-app": "npx mocha --exit -r esm test/app.test.js",
+    "test-coinrates": "npx mocha --exit -r esm test/modules/coinrates.test.js",
+    "test-socketio": "npx mocha --exit -r esm test/modules/socketio.test.js",
+    "test-connections": "npx mocha --exit -r esm test/modules/connections.test.js"
   },
   "standard": {
     "env": [

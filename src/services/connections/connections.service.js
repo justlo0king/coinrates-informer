@@ -15,10 +15,4 @@ module.exports = function (app) {
   const service = app.service('connections');
 
   service.hooks(hooks);
-  app.service('connections').publish((data) => {
-    const { id:connectionId } = data;
-    return [
-      app.channel(`connection/${connectionId}`)
-    ];
-  });
 };

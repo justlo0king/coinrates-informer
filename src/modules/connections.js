@@ -1,5 +1,32 @@
-export default function connectionManager(app) {
 
+/**
+ * Constructor for singleton cointaining logic related to coin exchange rates
+ * @param {Application} app - feathers app
+ * @param {Object} params   - parameters: {
+ *   send: function(connectionId, event, data) - method to send data to sockets
+ * }
+ * @returns frozen object with allowed methods:
+ *   disconnect,
+ *   getTotalConnections,
+ *   handshake,
+ *   send
+ */
+
+function createConnectionManager(app, params) {
+  const { send } = params || {};
+  if (typeof send !== 'function') {
+    throw new Error('connectionManager: send method not in params');
+  }
+
+  /**
+   * endpoint to register connection with handshake data
+   * @param {Object} params - object with following properties:
+   *  - connectionId {String} - unique connection identifier (socket.id or similar)
+   *  - payload {Object} - handshake data with "userId" string
+   * @param {function(error, connection){}} callback
+   *  method to call when done or failed
+   * @returns void
+   */
   const handshake = function(params, callback) {
     const { connectionId, payload } = params || {};
     const { userId } = payload || {};
@@ -25,7 +52,7 @@ export default function connectionManager(app) {
       id: connectionId,
       userId
     }).then((result) => {
-      app.debug('connectionManager.handshake: created record: ', result);
+      //app.debug('connectionManager.handshake: created record: ', result);
       return callback(null, result);
     }).catch((error) => {
       app.error('connectionManager.handshake: failed to create record, error: ',  error);
@@ -33,6 +60,14 @@ export default function connectionManager(app) {
     });
   };
 
+  /**
+   * endpoint to cleanup after socket disconnection
+   * @param {Object} params
+   *    should cointain "connectionId" string
+   * @param {function(error, connection){}} callback
+   *    optional callback
+   * @returns void
+   */
   const disconnect = function(params, callback) {
     callback = typeof callback == 'function' ? callback : function() {};
     const { connectionId } = params || {};
@@ -48,6 +83,15 @@ export default function connectionManager(app) {
     });
   };
 
+  /**
+   * endpoint to return total connections registered
+   * @param {Object} params
+   *    can conitain query object,
+   *    $limit: 1 will be added to query
+   * @param {function(error, total){}} callback
+   *    callback to trigger when data collected
+   * @returns void
+   */
   const getTotalConnections = function(params, callback) {
     const { query={} } = params || {};
     if (typeof query !== 'object') {
@@ -69,8 +113,24 @@ export default function connectionManager(app) {
   };
 
   return Object.freeze({
+    disconnect,
     getTotalConnections,
     handshake,
-    disconnect
+    send
   });
+}
+
+let manager;
+
+/**
+ *
+ * @param {*} app
+ * @param {*} params
+ * @returns
+ */
+export default function getConnectionManager(app, params) {
+  if (!manager) {
+    manager = createConnectionManager(app, params);
+  }
+  return manager;
 }

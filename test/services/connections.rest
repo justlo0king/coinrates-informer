@@ -1,0 +1,7 @@
+### updating connections by userId
+PATCH http://localhost:3030/connections/?userId=someUser
+Content-Type: application/json
+
+{
+  "command": { "name": "coinrates" }
+}

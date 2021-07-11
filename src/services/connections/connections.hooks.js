@@ -1,4 +1,6 @@
-import app from './../../app';
+import getConnectionManager from '../../modules/connections';
+import getCoinrateManager from '../../modules/coinrates';
+//import app from './../../app';
 
 module.exports = {
   before: {
@@ -46,9 +48,9 @@ module.exports = {
       const { command } = hook.data || {};
       if (provider) {
         // not backend request
-        if (!command || Object.keys(hook.data) !== 1) {
-          // only command in patch is allowed from external requests
-          //app.debug('connections.before.patch: not allowed data: ', hook.data);
+        if (!command || Object.keys(hook.data).length !== 1) {
+          // only 'command' in patch is allowed from external requests
+          //app.error('connections.before.patch: not allowed data: ', hook.data);
           throw new Error('Not allowed data');
         }
       }
@@ -77,19 +79,37 @@ module.exports = {
     get: [],
     create: [],
     update: [],
-    patch: [(hook) => {
-      const { command } = hook.params || {};
-      //app.debug('connections.after.update: command: ', command);
-      if (typeof command === 'object') {
+    patch: [
+      /**
+       * executes commands when connection is patched
+       * @param {HookContext} hook - feathers hook context
+       * @returns
+       */
+      (hook) => {
+        const { command } = hook.params || {};
         const { name:commandName } = command || {};
-        switch(commandName) {
-        case 'coinrate':
-
-          break;
+        if (!commandName || typeof commandName != 'string') {
+          // there was no command
+          return hook;
         }
+        if (commandName === 'coinrates') {
+          const { getRates } = getCoinrateManager();
+          const { send } = getConnectionManager();
+          const rates = getRates();
+
+          // result can be array or object, - making sure it is array
+          const resultData = Array.isArray(hook.result) ? hook.result : [ hook.result ];
+          resultData.map((connection) => {
+            //app.debug('connections.after.update: command: ', command);
+            const { id:connectionId } = connection || {};
+            //app.debug('connections.after.update: sending updates, connectionId: ', connectionId);
+            send(connectionId, 'coinrates', rates);
+          });
+        }
+
+        return hook;
       }
-      return hook;
-    }],
+    ],
     remove: []
   },
 

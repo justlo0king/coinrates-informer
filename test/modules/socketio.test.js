@@ -15,7 +15,6 @@ describe('Module tests: socketio', () => {
   });
 
   after(function(done) {
-
     if (socket) {
       socket.close();
     }
@@ -35,7 +34,6 @@ describe('Module tests: socketio', () => {
         }
       }, 2000);
       socket.on('connect', function() {
-        app.debug('test:', 'socket connected to: ', connectionUri);
         assert(socket);
         isResolved = true;
         if (rejectTimeout) {
@@ -58,10 +56,9 @@ describe('Module tests: socketio', () => {
         }
       }, 2000);
 
-      socket.on('connection', function(data) {
+      socket.on('handshake_result', function(data) {
         const { connection } = data || {};
         const { id:connectionId } = connection || {};
-        app.debug('test:', 'connection id: ', connectionId);
         assert.ok(connectionId, 'connection.id not in response');
         isResolved = true;
         if (rejectTimeout) {

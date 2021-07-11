@@ -27,11 +27,11 @@ describe('Feathers application tests', () => {
 
   it('starts and shows the index page', async () => {
     const { data } = await get(getUrl());
-
     assert.ok(data.indexOf('<html lang="en">') !== -1);
   });
 
   describe('404', function() {
+
     it('shows a 404 HTML page', async () => {
       try {
         await get(getUrl('path/to/nowhere'), {

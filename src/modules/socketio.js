@@ -1,28 +1,46 @@
 import connectionManager from './connections';
 
 /**
- * middleware to work on socket.io connections
+ * Middleware to work with socket.io connections
  * adds event listeners to socket.io instance and sockets
  * @param {*} app - feathers app
  * @returns void
  */
 export default function appSocketIO(app) {
   let io;
-  const { disconnect, handshake } = connectionManager(app);
+  const socketsById = new Map();
+
+  /**
+   * method to send data to sockets,
+   * will be passed as parameter to connection manager
+   * @param {String} socketId - unique connection identifier
+   * @param {String} event    - method to emit
+   * @param {Object} data     - data to send
+   */
+  const sendToConnection = function(socketId, event, data) {
+    const socket = socketsById.get(socketId);
+    if (socket) {
+      socket.emit(event, data);
+    } else {
+      app.error('app.socketio.send: socket not found by id: ', socketId);
+    }
+  };
+
+  // initializing connection manager singleton
+  const { disconnect, handshake } = connectionManager(app, {
+    send: sendToConnection
+  });
+
   return function(_io) {
     io = _io;
-    app.debug('app.socketio: init');
 
     io.on('error', function(error) {
       app.error('app.socketio: error: ', error);
     });
 
     io.on('connection', function(socket) {
-      app.debug('app.socketio: connection: ', socket.id);
-
       // subscribing to handshake event
       socket.on('handshake', function (payload) {
-        app.debug('app.socketio: handshake data: ', payload);
         // passing handshake data to connection manager
         handshake({
           connectionId: socket.id,
@@ -33,15 +51,18 @@ export default function appSocketIO(app) {
             payload = { error: error.message || error };
           } else {
             payload = { connection };
+            socketsById.set(socket.id, socket);
           }
-          socket.emit('connection', payload);
+
+          socket.emit('handshake_result', payload);
         });
       });
 
       // subscribing to disconnect event
-      socket.on('disconnect', function(reason) {
+      socket.on('disconnect', function() {
         const connectionId = socket && socket.id || '';
-        app.debug(`app.socketio: disconnected id: ${connectionId}, reason: `, reason);
+        socketsById.delete(socket.id);
+        //app.debug(`app.socketio: disconnected id: ${connectionId}, reason: `, reason);
         disconnect({ connectionId });
       });
     });

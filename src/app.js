@@ -19,6 +19,8 @@ import services from './services';
 import appHooks from './app.hooks';
 import channels from './channels';
 
+import getCoinrateManager from './modules/coinrates';
+
 const app = express(feathers());
 
 // Load app configuration
@@ -54,5 +56,8 @@ app.use(errorHandler({ logger }));
 app.hooks(appHooks);
 app.debug = console.log;
 app.error = console.error;
+
+// initializing coinrate manager
+getCoinrateManager(app);
 
 export default app;

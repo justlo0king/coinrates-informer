@@ -1,5 +1,7 @@
 // Application hooks that run for every service
 
+//import app from './app';
+
 const before = {
   all: [],
   find: [],
@@ -19,7 +21,10 @@ const after = {
   remove: []
 };
 const error = {
-  all: [],
+  all: [(hook) => {
+    //app.error('app.hooks.error: ', hook.error);
+    return hook;
+  }],
   find: [],
   get: [],
   create: [],

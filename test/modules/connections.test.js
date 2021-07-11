@@ -5,10 +5,11 @@ import getConnectionManager from './../../src/modules/connections';
 
 const port = app.get('port') || 8998;
 
-describe('Module tests: socketio', () => {
+describe('Module tests: connections', () => {
   let server;
   let socket;
   let connectionManager;
+  let connectionId;
   const testUserID = 'someUser';
 
   before(function(done) {
@@ -18,16 +19,10 @@ describe('Module tests: socketio', () => {
   });
 
   after(function(done) {
-    connectionManager.getTotalConnections({}, (error, total) => {
-      if (error) {
-        throw error;
-      }
-      app.debug('test.after:', 'total connections: ', total);
-      if (socket) {
-        socket.close();
-      }
-      server.close(done);
-    });
+    if (socket) {
+      socket.close();
+    }
+    server.close(done);
   });
 
   it('registers connection in service', () => {
@@ -47,50 +42,23 @@ describe('Module tests: socketio', () => {
       socket.on('connect', function() {
         socket.emit('handshake', { userId: testUserID });
       });
-      socket.on('connection', function(data) {
+      socket.on('handshake_result', function(data) {
         const { connection } = data || {};
-        const { id:connectionId } = connection || {};
-        app.debug('test:', 'connection id: ', connectionId);
-        isResolved = true;
-        if (rejectTimeout) {
-          clearTimeout(rejectTimeout);
-        }
+        connectionId = connection && connection.id;
+        assert.ok(connectionId);
+        //app.debug('test:', 'connection id: ', connectionId);
         connectionManager.getTotalConnections({}, (error, total) => {
           if (error) {
             throw error;
           }
-          app.debug('test:', 'total connections: ', total);
+          //app.debug('test:', 'total connections: ', total);
           assert.equal(total, 1);
+          isResolved = true;
+          if (rejectTimeout) {
+            clearTimeout(rejectTimeout);
+          }
           resolve();
         });
-      });
-    }));
-  });
-
-  it('receives connection updates', () => {
-    return (new Promise(function(resolve, reject) {
-      let isResolved = false;
-      let rejectTimeout = setTimeout(function() {
-        if (!isResolved) {
-          reject();
-        }
-      }, 2000);
-
-      socket.on('connections patched', function(data) {
-        app.debug('test:', 'patched connection: ', data);
-        isResolved = true;
-        if (rejectTimeout) {
-          clearTimeout(rejectTimeout);
-        }
-        resolve();
-      });
-
-      app.service('connections').patch(null, {
-        command: { name: 'coinrate' }
-      }, {
-        query: { userId: testUserID }
-      }).catch((error) => {
-        app.error('test:', 'failed to patch connection, error: ', error);
       });
     }));
   });
@@ -125,28 +93,108 @@ describe('Module tests: socketio', () => {
     }));
   });
 
-  it('removes record from service when disconnected', () => {
+  it('cannot remove connection record', () => {
     return (new Promise(function(resolve, reject) {
+      if (!socket || !socket.connected) {
+        reject('socket is not connected');
+      }
+
       let isResolved = false;
       let rejectTimeout = setTimeout(function() {
         if (!isResolved) {
           reject();
         }
-      }, 4000);
+      }, 2000);
 
+      socket.emit('remove', 'connections', connectionId, (error) => {
+        if (error) {
+          assert.equal(error && error.message, 'Permission denied');
+          isResolved = true;
+          if (rejectTimeout) {
+            clearTimeout(rejectTimeout);
+          }
+          resolve();
+        }
+      });
+    }));
+  });
+
+  it('cannot find connection records', () => {
+    return (new Promise(function(resolve, reject) {
       if (!socket || !socket.connected) {
         reject('socket is not connected');
       }
 
-      socket.close();
+      let isResolved = false;
+      let rejectTimeout = setTimeout(function() {
+        if (!isResolved) {
+          reject();
+        }
+      }, 2000);
 
+      socket.emit('find', 'connections', {}, (error) => {
+        if (error) {
+          assert.equal(error && error.message, 'Permission denied');
+          isResolved = true;
+          if (rejectTimeout) {
+            clearTimeout(rejectTimeout);
+          }
+          resolve();
+        }
+      });
+    }));
+  });
+
+
+  it('cannot get connection record', () => {
+    return (new Promise(function(resolve, reject) {
+      if (!socket || !socket.connected) {
+        reject('socket is not connected');
+      }
+
+      let isResolved = false;
+      let rejectTimeout = setTimeout(function() {
+        if (!isResolved) {
+          reject();
+        }
+      }, 2000);
+
+      socket.emit('get', 'connections', connectionId, (error) => {
+        if (error) {
+          assert.equal(error && error.message, 'Permission denied');
+          isResolved = true;
+          if (rejectTimeout) {
+            clearTimeout(rejectTimeout);
+          }
+          resolve();
+        }
+      });
+    }));
+  });
+
+
+  it('removes record from service when disconnected', () => {
+    if (!socket || !socket.connected) {
+      throw new Error('socket is not connected');
+    }
+
+    if (socket) {
+      socket.close();
+    }
+    let isResolved = false;
+    let rejectTimeout = setTimeout(function() {
+      if (!isResolved) {
+        throw new Error('Failed to remove record');
+      }
+    }, 4000);
+
+    return (new Promise(function(resolve, reject) {
       // delaying checking total to get updated results
       setTimeout(() => {
         connectionManager.getTotalConnections({}, (error, total) => {
           if (error) {
-            throw error;
+            return reject(error);
           }
-          app.debug('test:', 'total connections: ', total);
           assert.equal(total, 0);
           isResolved = true;
           if (rejectTimeout) {
