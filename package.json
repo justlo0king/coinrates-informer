@@ -29,10 +29,10 @@
     "dev": "nodemon src/",
     "start": "node src/",
     "mocha": "yarn test-app && yarn test-socketio && yarn test-connections && yarn test-coinrates",
-    "test-app": "npx mocha --exit -r esm test/app.test.js",
-    "test-coinrates": "npx mocha --exit -r esm test/modules/coinrates.test.js",
-    "test-socketio": "npx mocha --exit -r esm test/modules/socketio.test.js",
-    "test-connections": "npx mocha --exit -r esm test/modules/connections.test.js"
+    "test-app": "npx mocha --exit -r @babel/register test/app.test.js",
+    "test-coinrates": "npx mocha --exit -r @babel/register test/modules/coinrates.test.js",
+    "test-socketio": "npx mocha --exit -r @babel/register test/modules/socketio.test.js",
+    "test-connections": "npx mocha --exit -r @babel/register test/modules/connections.test.js"
   },
   "standard": {
     "env": [
@@ -59,7 +59,6 @@
     "@babel/register": "^7.14.5",
     "axios": "^0.21.1",
     "eslint": "^7.16.0",
-    "esm": "^3.2.25",
     "mocha": "^8.2.1",
     "nodemon": "^2.0.6"
   }
