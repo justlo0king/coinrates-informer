@@ -32,7 +32,8 @@
     "test-app": "npx mocha --exit -r @babel/register test/app.test.js",
     "test-coinrates": "npx mocha --exit -r @babel/register test/modules/coinrates.test.js",
     "test-socketio": "npx mocha --exit -r @babel/register test/modules/socketio.test.js",
-    "test-connections": "npx mocha --exit -r @babel/register test/modules/connections.test.js"
+    "test-connections": "npx mocha --exit -r @babel/register test/modules/connections.test.js",
+    "test-noexit": "npx mocha -r @babel/register test/modules/coinrates-manual.test.js"
   },
   "standard": {
     "env": [
