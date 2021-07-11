@@ -10,7 +10,6 @@ Most of the logic is located in `src/modules` folder.
 ## Getting Started
 
 Getting up and running is as easy.
-
 1. Make sure you have [NodeJS](https://nodejs.org/) and [Yarn](https://yarnpkg.com) installed.
 2. Install your dependencies
 
@@ -18,15 +17,16 @@ Getting up and running is as easy.
     cd path/to/api
     yarn install
     ```
+3. Create API key at [CryptoCompare](https://www.cryptocompare.com). Place it as `cryptocompare.apikey` in `config/default.json`.
 
-3. Start your app to get it running at http://localhost:3000
+4. Start your app to get it running at http://localhost:3000
 
     ```
     yarn start
     ```
-4. Connect by [Socket.io](https://socket.io/) to `ws://localhost:3000`. Emit `handshake` event with `userId` property in passed data.
+5. Connect by [Socket.io](https://socket.io/) to `ws://localhost:3000`. Emit `handshake` event with `userId` property in passed data.
 
-5. Send PATCH request to REST API endpoint with userId in  query to receive exchange rates as socket message:
+6. Send PATCH request to REST API endpoint with userId in  query to receive exchange rates as socket message:
 
     ```
     PATCH http://localhost:3030/connections/?userId=someUser
