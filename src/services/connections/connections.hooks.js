@@ -1,6 +1,7 @@
+//import app from './../../app';
+
 import getConnectionManager from '../../modules/connections';
 import getCoinrateManager from '../../modules/coinrates';
-//import app from './../../app';
 
 module.exports = {
   before: {
