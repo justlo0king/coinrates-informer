@@ -10,6 +10,7 @@ describe('Module tests: coinrates', () => {
   let server;
   let coinrateManager;
   let socket;
+  let secondSocket;
   let connectionManager;
   const testUserID = 'someUser';
 
@@ -23,6 +24,9 @@ describe('Module tests: coinrates', () => {
   after(function(done) {
     if (socket) {
       socket.close();
+    }
+    if (secondSocket) {
+      secondSocket.close();
     }
     server.close(done);
   });
@@ -53,7 +57,7 @@ describe('Module tests: coinrates', () => {
   });
 
 
-  it('connection is registered in service', () => {
+  it('two connections from same user are registered in service', () => {
     const connectionUri = `${app.get('protocol')}://${app.get('host')}:${port}`;
 
     return (new Promise(function(resolve, reject) {
@@ -67,6 +71,11 @@ describe('Module tests: coinrates', () => {
       socket = io(connectionUri, {
         transports: ['websocket']
       });
+
+      secondSocket = io(connectionUri, {
+        transports: ['websocket']
+      });
+
       socket.on('connect', function() {
         socket.emit('handshake', { userId: testUserID });
       });
@@ -78,7 +87,7 @@ describe('Module tests: coinrates', () => {
           if (error) {
             throw error;
           }
-          assert.equal(total, 1);
+          assert.equal(total > 0 && total <= 2, true);
           isResolved = true;
           if (rejectTimeout) {
             clearTimeout(rejectTimeout);
@@ -87,10 +96,29 @@ describe('Module tests: coinrates', () => {
         });
       });
 
+      secondSocket.on('connect', function() {
+        secondSocket.emit('handshake', { userId: testUserID });
+      });
+      secondSocket.on('handshake_result', function(data) {
+        const { connection } = data || {};
+        const { id:connectionId } = connection || {};
+        assert.ok(connectionId);
+        connectionManager.getTotalConnections({}, (error, total) => {
+          if (error) {
+            throw error;
+          }
+          assert.equal(total > 0 && total <= 2, true);
+          isResolved = true;
+          if (rejectTimeout) {
+            clearTimeout(rejectTimeout);
+          }
+          resolve();
+        });
+      });
     }));
   });
 
-  it('client receives rates by socket using call to API', () => {
+  it('both sockets receive rates by socket using call to API', () => {
     return (new Promise(function(resolve, reject) {
       if (!socket || !socket.connected) {
         reject('socket is not connected');
@@ -102,15 +130,32 @@ describe('Module tests: coinrates', () => {
           reject();
         }
       }, 2000);
+      let updatesReceived = 0;
 
       socket.on('coinrates', function(data) {
         //app.debug('test: ', 'coinrates update received: ', data);
         assert.equal(typeof (data && data.USD), 'number');
-        isResolved = true;
-        if (rejectTimeout) {
-          clearTimeout(rejectTimeout);
+        updatesReceived += 1;
+        if (updatesReceived == 2) {
+          isResolved = true;
+          if (rejectTimeout) {
+            clearTimeout(rejectTimeout);
+          }
+          return resolve();
         }
-        resolve();
+      });
+
+      secondSocket.on('coinrates', function(data) {
+        //app.debug('test: ', 'coinrates update received to second socket: ', data);
+        assert.equal(typeof (data && data.USD), 'number');
+        updatesReceived += 1;
+        if (updatesReceived == 2) {
+          isResolved = true;
+          if (rejectTimeout) {
+            clearTimeout(rejectTimeout);
+          }
+          return resolve();
+        }
       });
 
       app.service('connections').patch(null, {
