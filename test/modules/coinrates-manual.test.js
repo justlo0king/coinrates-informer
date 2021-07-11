@@ -25,12 +25,14 @@ describe('Module tests: coinrates, not stopping server', () => {
       //socket.close();
     }
     //server.close(done);
-    const requestUri = `${app.get('protocol')}://${app.get('host')}:${port}/connections?query=<userId>`;
-    app.debug(`Use userId: ${testUserID} in PATCH requests to ${requestUri}`);
+    const requestUri = `${app.get('protocol')}://${app.get('host')}:${port}/connections?query=${testUserID}`;
+    app.debug('\n\n------------------------------------------');
+    app.debug(`Send following request to API: \n\nPATCH ${requestUri} \nContent-type: application/json \n\n{ command: { name: 'coinrates' }}`);
+    app.debug('------------------------------------------');
     done();
   });
 
-  it('registers connection in service', () => {
+  it('connection is registered in service', () => {
     const connectionUri = `${app.get('protocol')}://${app.get('host')}:${port}`;
 
     return (new Promise(function(resolve, reject) {
@@ -87,7 +89,7 @@ describe('Module tests: coinrates, not stopping server', () => {
   });
 
 
-  it('receives rates by socket using call to API', () => {
+  it('client receives rates by socket using call to API', () => {
     return (new Promise(function(resolve, reject) {
       if (!socket || !socket.connected) {
         reject('socket is not connected');
@@ -101,7 +103,7 @@ describe('Module tests: coinrates, not stopping server', () => {
       }, 2000);
 
       socket.on('coinrates', function(data) {
-        app.debug('test: ', 'coinrates update received: ', data);
+        app.debug('coinrates update received: ', data);
         assert.equal(typeof (data && data.USD), 'number');
         isResolved = true;
         if (rejectTimeout) {
