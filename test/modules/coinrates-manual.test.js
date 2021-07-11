@@ -21,10 +21,6 @@ describe('Module tests: coinrates, not stopping server', () => {
   });
 
   after(function(done) {
-    if (socket) {
-      //socket.close();
-    }
-    //server.close(done);
     const requestUri = `${app.get('protocol')}://${app.get('host')}:${port}/connections?query=${testUserID}`;
     app.debug('\n\n------------------------------------------');
     app.debug(`Send following request to API: \n\nPATCH ${requestUri} \nContent-type: application/json \n\n{ command: { name: 'coinrates' }}`);
@@ -92,13 +88,13 @@ describe('Module tests: coinrates, not stopping server', () => {
   it('client receives rates by socket using call to API', () => {
     return (new Promise(function(resolve, reject) {
       if (!socket || !socket.connected) {
-        reject('socket is not connected');
+        return reject('socket is not connected');
       }
 
       let isResolved = false;
       let rejectTimeout = setTimeout(function() {
         if (!isResolved) {
-          reject();
+          return reject();
         }
       }, 2000);
 

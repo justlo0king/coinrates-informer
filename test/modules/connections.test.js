@@ -66,17 +66,17 @@ describe('Module tests: connections', () => {
   it('client cannot patch records except sending command', () => {
     return (new Promise(function(resolve, reject) {
       if (!socket || !socket.connected) {
-        reject('socket is not connected');
+        return reject('socket is not connected');
       }
 
       let isResolved = false;
       let rejectTimeout = setTimeout(function() {
         if (!isResolved) {
-          reject();
+          return reject();
         }
       }, 2000);
 
-      socket.emit('patch', 'connections', null, {
+      return socket.emit('patch', 'connections', null, {
         someData: true
       }, {
         query: { userId: testUserID }
@@ -87,7 +87,7 @@ describe('Module tests: connections', () => {
           if (rejectTimeout) {
             clearTimeout(rejectTimeout);
           }
-          resolve();
+          return resolve();
         }
       });
     }));
@@ -96,17 +96,17 @@ describe('Module tests: connections', () => {
   it('client cannot create connection records', () => {
     return (new Promise(function(resolve, reject) {
       if (!socket || !socket.connected) {
-        reject('socket is not connected');
+        return reject('socket is not connected');
       }
 
       let isResolved = false;
       let rejectTimeout = setTimeout(function() {
         if (!isResolved) {
-          reject();
+          return reject();
         }
       }, 2000);
 
-      socket.emit('create', 'connections', {
+      return socket.emit('create', 'connections', {
         id: '12345', userId: '54321'
       }, (error) => {
         if (error) {
@@ -115,7 +115,7 @@ describe('Module tests: connections', () => {
           if (rejectTimeout) {
             clearTimeout(rejectTimeout);
           }
-          resolve();
+          return resolve();
         }
       });
     }));
@@ -125,7 +125,7 @@ describe('Module tests: connections', () => {
   it('client cannot remove connection records', () => {
     return (new Promise(function(resolve, reject) {
       if (!socket || !socket.connected) {
-        reject('socket is not connected');
+        return reject('socket is not connected');
       }
 
       let isResolved = false;
@@ -135,14 +135,14 @@ describe('Module tests: connections', () => {
         }
       }, 2000);
 
-      socket.emit('remove', 'connections', connectionId, (error) => {
+      return socket.emit('remove', 'connections', connectionId, (error) => {
         if (error) {
           assert.equal(error && error.message, 'Permission denied');
           isResolved = true;
           if (rejectTimeout) {
             clearTimeout(rejectTimeout);
           }
-          resolve();
+          return resolve();
         }
       });
     }));
@@ -152,24 +152,24 @@ describe('Module tests: connections', () => {
   it('client cannot find connection records', () => {
     return (new Promise(function(resolve, reject) {
       if (!socket || !socket.connected) {
-        reject('socket is not connected');
+        return reject('socket is not connected');
       }
 
       let isResolved = false;
       let rejectTimeout = setTimeout(function() {
         if (!isResolved) {
-          reject();
+          return reject();
         }
       }, 2000);
 
-      socket.emit('find', 'connections', {}, (error) => {
+      return socket.emit('find', 'connections', {}, (error) => {
         if (error) {
           assert.equal(error && error.message, 'Permission denied');
           isResolved = true;
           if (rejectTimeout) {
             clearTimeout(rejectTimeout);
           }
-          resolve();
+          return resolve();
         }
       });
     }));
@@ -179,24 +179,24 @@ describe('Module tests: connections', () => {
   it('client cannot get connection record', () => {
     return (new Promise(function(resolve, reject) {
       if (!socket || !socket.connected) {
-        reject('socket is not connected');
+        return reject('socket is not connected');
       }
 
       let isResolved = false;
       let rejectTimeout = setTimeout(function() {
         if (!isResolved) {
-          reject();
+          return reject();
         }
       }, 2000);
 
-      socket.emit('get', 'connections', connectionId, (error) => {
+      return socket.emit('get', 'connections', connectionId, (error) => {
         if (error) {
           assert.equal(error && error.message, 'Permission denied');
           isResolved = true;
           if (rejectTimeout) {
             clearTimeout(rejectTimeout);
           }
-          resolve();
+          return resolve();
         }
       });
     }));
@@ -205,17 +205,17 @@ describe('Module tests: connections', () => {
   it('client gets error when sending dummy commands', () => {
     return (new Promise(function(resolve, reject) {
       if (!socket || !socket.connected) {
-        reject('socket is not connected');
+        return reject('socket is not connected');
       }
 
       let isResolved = false;
       let rejectTimeout = setTimeout(function() {
         if (!isResolved) {
-          reject();
+          return reject();
         }
       }, 2000);
 
-      socket.emit('patch', 'connections', connectionId, {
+      return socket.emit('patch', 'connections', connectionId, {
         command: { name: 'dummy' }
       }, (error) => {
         if (error) {
@@ -224,14 +224,14 @@ describe('Module tests: connections', () => {
           if (rejectTimeout) {
             clearTimeout(rejectTimeout);
           }
-          resolve();
+          return resolve();
         }
       });
     }));
   });
 
 
-  it('record is removed when socket disconnected', () => {
+  it('closes socket connection', () => {
     if (!socket || !socket.connected) {
       throw new Error('socket is not connected');
     }
@@ -239,16 +239,20 @@ describe('Module tests: connections', () => {
     if (socket) {
       socket.close();
     }
+    assert.notEqual(socket.connected, true);
+  });
+
+  it('record is removed when socket disconnected', () => {
     let isResolved = false;
     let rejectTimeout = setTimeout(function() {
       if (!isResolved) {
         throw new Error('Failed to remove record');
       }
-    }, 4000);
+    }, 2000);
 
     return (new Promise(function(resolve, reject) {
       // delaying checking total to get updated results
-      setTimeout(() => {
+      return setTimeout(() => {
         connectionManager.getTotalConnections({}, (error, total) => {
           if (error) {
             return reject(error);
@@ -258,8 +262,8 @@ describe('Module tests: connections', () => {
           if (rejectTimeout) {
             clearTimeout(rejectTimeout);
           }
-          resolve();
-        }, 2000);
+          return resolve();
+        });
       });
     }));
   });
