@@ -53,7 +53,7 @@ describe('Module tests: coinrates', () => {
   });
 
 
-  it('registers connection in service', () => {
+  it('connection is registered in service', () => {
     const connectionUri = `${app.get('protocol')}://${app.get('host')}:${port}`;
 
     return (new Promise(function(resolve, reject) {
@@ -90,7 +90,7 @@ describe('Module tests: coinrates', () => {
     }));
   });
 
-  it('receives rates by socket using call to API', () => {
+  it('client receives rates by socket using call to API', () => {
     return (new Promise(function(resolve, reject) {
       if (!socket || !socket.connected) {
         reject('socket is not connected');

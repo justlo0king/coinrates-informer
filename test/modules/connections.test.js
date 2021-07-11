@@ -25,7 +25,7 @@ describe('Module tests: connections', () => {
     server.close(done);
   });
 
-  it('registers connection in service', () => {
+  it('connection is registered in service', () => {
     const connectionUri = `${app.get('protocol')}://${app.get('host')}:${port}`;
 
     return (new Promise(function(resolve, reject) {
@@ -63,7 +63,7 @@ describe('Module tests: connections', () => {
     }));
   });
 
-  it('cannot patch records except sending command', () => {
+  it('client cannot patch records except sending command', () => {
     return (new Promise(function(resolve, reject) {
       if (!socket || !socket.connected) {
         reject('socket is not connected');
@@ -77,7 +77,7 @@ describe('Module tests: connections', () => {
       }, 2000);
 
       socket.emit('patch', 'connections', null, {
-        read: true
+        someData: true
       }, {
         query: { userId: testUserID }
       }, (error) => {
@@ -93,7 +93,36 @@ describe('Module tests: connections', () => {
     }));
   });
 
-  it('cannot remove connection record', () => {
+  it('client cannot create connection records', () => {
+    return (new Promise(function(resolve, reject) {
+      if (!socket || !socket.connected) {
+        reject('socket is not connected');
+      }
+
+      let isResolved = false;
+      let rejectTimeout = setTimeout(function() {
+        if (!isResolved) {
+          reject();
+        }
+      }, 2000);
+
+      socket.emit('create', 'connections', {
+        id: '12345', userId: '54321'
+      }, (error) => {
+        if (error) {
+          assert.equal(error && error.message, 'Permission denied');
+          isResolved = true;
+          if (rejectTimeout) {
+            clearTimeout(rejectTimeout);
+          }
+          resolve();
+        }
+      });
+    }));
+  });
+
+
+  it('client cannot remove connection records', () => {
     return (new Promise(function(resolve, reject) {
       if (!socket || !socket.connected) {
         reject('socket is not connected');
@@ -119,7 +148,8 @@ describe('Module tests: connections', () => {
     }));
   });
 
-  it('cannot find connection records', () => {
+
+  it('client cannot find connection records', () => {
     return (new Promise(function(resolve, reject) {
       if (!socket || !socket.connected) {
         reject('socket is not connected');
@@ -146,7 +176,7 @@ describe('Module tests: connections', () => {
   });
 
 
-  it('cannot get connection record', () => {
+  it('client cannot get connection record', () => {
     return (new Promise(function(resolve, reject) {
       if (!socket || !socket.connected) {
         reject('socket is not connected');
@@ -172,8 +202,36 @@ describe('Module tests: connections', () => {
     }));
   });
 
+  it('client gets error when sending dummy commands', () => {
+    return (new Promise(function(resolve, reject) {
+      if (!socket || !socket.connected) {
+        reject('socket is not connected');
+      }
 
-  it('removes record from service when disconnected', () => {
+      let isResolved = false;
+      let rejectTimeout = setTimeout(function() {
+        if (!isResolved) {
+          reject();
+        }
+      }, 2000);
+
+      socket.emit('patch', 'connections', connectionId, {
+        command: { name: 'dummy' }
+      }, (error) => {
+        if (error) {
+          assert.equal(error && error.message, 'Command not recognized');
+          isResolved = true;
+          if (rejectTimeout) {
+            clearTimeout(rejectTimeout);
+          }
+          resolve();
+        }
+      });
+    }));
+  });
+
+
+  it('record is removed when socket disconnected', () => {
     if (!socket || !socket.connected) {
       throw new Error('socket is not connected');
     }
