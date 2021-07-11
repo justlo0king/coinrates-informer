@@ -62,6 +62,7 @@ describe('Module tests: coinrates', () => {
 
     return (new Promise(function(resolve, reject) {
       let isResolved = false;
+      let handshakesDone = 0;
       let rejectTimeout = setTimeout(function() {
         if (!isResolved) {
           reject();
@@ -79,6 +80,7 @@ describe('Module tests: coinrates', () => {
       socket.on('connect', function() {
         socket.emit('handshake', { userId: testUserID });
       });
+
       socket.on('handshake_result', function(data) {
         const { connection } = data || {};
         const { id:connectionId } = connection || {};
@@ -88,11 +90,16 @@ describe('Module tests: coinrates', () => {
             throw error;
           }
           assert.equal(total > 0 && total <= 2, true);
-          isResolved = true;
-          if (rejectTimeout) {
-            clearTimeout(rejectTimeout);
+
+          handshakesDone += 1;
+          if (handshakesDone == 2) {
+            assert.equal(total, 2);
+            isResolved = true;
+            if (rejectTimeout) {
+              clearTimeout(rejectTimeout);
+            }
+            resolve();
           }
-          resolve();
         });
       });
 
@@ -108,11 +115,16 @@ describe('Module tests: coinrates', () => {
             throw error;
           }
           assert.equal(total > 0 && total <= 2, true);
-          isResolved = true;
-          if (rejectTimeout) {
-            clearTimeout(rejectTimeout);
+
+          handshakesDone += 1;
+          if (handshakesDone == 2) {
+            assert.equal(total, 2);
+            isResolved = true;
+            if (rejectTimeout) {
+              clearTimeout(rejectTimeout);
+            }
+            resolve();
           }
-          resolve();
         });
       });
     }));
